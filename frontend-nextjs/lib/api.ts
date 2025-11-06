@@ -103,7 +103,7 @@ async function apiRequest<T>(
 // Refresh access token
 async function refreshAccessToken(refreshToken: string): Promise<TokenResponse | null> {
   try {
-    const response = await fetch(`${API_BASE_URL}/auth/token/refresh/`, {
+    const response = await fetch(`${API_BASE_URL}/api/auth/token/refresh/`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -135,7 +135,7 @@ export const authAPI = {
       user: any;
       tokens: TokenResponse;
       message: string;
-    }>('/auth/register/', {
+    }>('/api/auth/register/', {
       method: 'POST',
       body: JSON.stringify(userData),
     });
@@ -147,7 +147,7 @@ export const authAPI = {
   },
   
   login: async (credentials: { username: string; password: string }) => {
-    const response = await apiRequest<TokenResponse>('/auth/login/', {
+    const response = await apiRequest<TokenResponse>('/api/auth/login/', {
       method: 'POST',
       body: JSON.stringify(credentials),
     });
@@ -165,7 +165,7 @@ export const authAPI = {
     const tokens = getTokens();
     if (tokens?.refreshToken) {
       try {
-        await apiRequest('/auth/logout/', {
+        await apiRequest('/api/auth/logout/', {
           method: 'POST',
           body: JSON.stringify({ refresh_token: tokens.refreshToken }),
         });
@@ -177,18 +177,18 @@ export const authAPI = {
   },
   
   getProfile: async () => {
-    return await apiRequest<any>('/auth/profile/');
+    return await apiRequest<any>('/api/auth/profile/');
   },
   
   updateProfile: async (profileData: any) => {
-    return await apiRequest<{ user: any; message: string }>('/auth/profile/', {
+    return await apiRequest<{ user: any; message: string }>('/api/auth/profile/', {
       method: 'PUT',
       body: JSON.stringify(profileData),
     });
   },
   
   changePassword: async (passwordData: { old_password: string; new_password: string }) => {
-    return await apiRequest<{ message: string }>('/auth/change-password/', {
+    return await apiRequest<{ message: string }>('/api/auth/change-password/', {
       method: 'POST',
       body: JSON.stringify(passwordData),
     });
@@ -198,48 +198,48 @@ export const authAPI = {
 // CV API
 export const cvAPI = {
   list: async () => {
-    return await apiRequest<any[]>('/cvs/');
+    return await apiRequest<any[]>('/api/cvs/');
   },
   
   get: async (id: number) => {
-    return await apiRequest<any>(`/cvs/${id}/`);
+    return await apiRequest<any>(`/api/cvs/${id}/`);
   },
   
   create: async (cvData: any) => {
-    return await apiRequest<any>('/cvs/', {
+    return await apiRequest<any>('/api/cvs/', {
       method: 'POST',
       body: JSON.stringify(cvData),
     });
   },
   
   update: async (id: number, cvData: any) => {
-    return await apiRequest<any>(`/cvs/${id}/`, {
+    return await apiRequest<any>(`/api/cvs/${id}/`, {
       method: 'PUT',
       body: JSON.stringify(cvData),
     });
   },
   
   partialUpdate: async (id: number, cvData: any) => {
-    return await apiRequest<any>(`/cvs/${id}/`, {
+    return await apiRequest<any>(`/api/cvs/${id}/`, {
       method: 'PATCH',
       body: JSON.stringify(cvData),
     });
   },
   
   delete: async (id: number) => {
-    return await apiRequest<void>(`/cvs/${id}/`, {
+    return await apiRequest<void>(`/api/cvs/${id}/`, {
       method: 'DELETE',
     });
   },
   
   analyze: async (id: number) => {
-    return await apiRequest<{ message: string; analysis: any }>(`/cvs/${id}/analyze/`, {
+    return await apiRequest<{ message: string; analysis: any }>(`/api/cvs/${id}/analyze/`, {
       method: 'POST',
     });
   },
   
   duplicate: async (id: number) => {
-    return await apiRequest<{ message: string; cv: any }>(`/cvs/${id}/duplicate/`, {
+    return await apiRequest<{ message: string; cv: any }>(`/api/cvs/${id}/duplicate/`, {
       method: 'POST',
     });
   },
@@ -248,25 +248,25 @@ export const cvAPI = {
 // Work Experience API
 export const workExperienceAPI = {
   list: async (cvId: number) => {
-    return await apiRequest<any[]>(`/cvs/work-experience/?cv_id=${cvId}`);
+    return await apiRequest<any[]>(`/api/cvs/work-experience/?cv_id=${cvId}`);
   },
   
   create: async (data: any) => {
-    return await apiRequest<any>('/cvs/work-experience/', {
+    return await apiRequest<any>('/api/cvs/work-experience/', {
       method: 'POST',
       body: JSON.stringify(data),
     });
   },
   
   update: async (id: number, data: any) => {
-    return await apiRequest<any>(`/cvs/work-experience/${id}/`, {
+    return await apiRequest<any>(`/api/cvs/work-experience/${id}/`, {
       method: 'PUT',
       body: JSON.stringify(data),
     });
   },
   
   delete: async (id: number) => {
-    return await apiRequest<void>(`/cvs/work-experience/${id}/`, {
+    return await apiRequest<void>(`/api/cvs/work-experience/${id}/`, {
       method: 'DELETE',
     });
   },
@@ -275,25 +275,25 @@ export const workExperienceAPI = {
 // Education API
 export const educationAPI = {
   list: async (cvId: number) => {
-    return await apiRequest<any[]>(`/cvs/education/?cv_id=${cvId}`);
+    return await apiRequest<any[]>(`/api/cvs/education/?cv_id=${cvId}`);
   },
   
   create: async (data: any) => {
-    return await apiRequest<any>('/cvs/education/', {
+    return await apiRequest<any>('/api/cvs/education/', {
       method: 'POST',
       body: JSON.stringify(data),
     });
   },
   
   update: async (id: number, data: any) => {
-    return await apiRequest<any>(`/cvs/education/${id}/`, {
+    return await apiRequest<any>(`/api/cvs/education/${id}/`, {
       method: 'PUT',
       body: JSON.stringify(data),
     });
   },
   
   delete: async (id: number) => {
-    return await apiRequest<void>(`/cvs/education/${id}/`, {
+    return await apiRequest<void>(`/api/cvs/education/${id}/`, {
       method: 'DELETE',
     });
   },
@@ -302,25 +302,25 @@ export const educationAPI = {
 // Skills API
 export const skillsAPI = {
   list: async (cvId: number) => {
-    return await apiRequest<any[]>(`/cvs/skills/?cv_id=${cvId}`);
+    return await apiRequest<any[]>(`/api/cvs/skills/?cv_id=${cvId}`);
   },
   
   create: async (data: any) => {
-    return await apiRequest<any>('/cvs/skills/', {
+    return await apiRequest<any>('/api/cvs/skills/', {
       method: 'POST',
       body: JSON.stringify(data),
     });
   },
   
   update: async (id: number, data: any) => {
-    return await apiRequest<any>(`/cvs/skills/${id}/`, {
+    return await apiRequest<any>(`/api/cvs/skills/${id}/`, {
       method: 'PUT',
       body: JSON.stringify(data),
     });
   },
   
   delete: async (id: number) => {
-    return await apiRequest<void>(`/cvs/skills/${id}/`, {
+    return await apiRequest<void>(`/api/cvs/skills/${id}/`, {
       method: 'DELETE',
     });
   },
@@ -329,25 +329,25 @@ export const skillsAPI = {
 // Projects API
 export const projectsAPI = {
   list: async (cvId: number) => {
-    return await apiRequest<any[]>(`/cvs/projects/?cv_id=${cvId}`);
+    return await apiRequest<any[]>(`/api/api/cvs/projects/?cv_id=${cvId}`);
   },
   
   create: async (data: any) => {
-    return await apiRequest<any>('/cvs/projects/', {
+    return await apiRequest<any>('/api/cvs/projects/', {
       method: 'POST',
       body: JSON.stringify(data),
     });
   },
   
   update: async (id: number, data: any) => {
-    return await apiRequest<any>(`/cvs/projects/${id}/`, {
+    return await apiRequest<any>(`/api/cvs/projects/${id}/`, {
       method: 'PUT',
       body: JSON.stringify(data),
     });
   },
   
   delete: async (id: number) => {
-    return await apiRequest<void>(`/cvs/projects/${id}/`, {
+    return await apiRequest<void>(`/api/cvs/projects/${id}/`, {
       method: 'DELETE',
     });
   },
@@ -356,25 +356,25 @@ export const projectsAPI = {
 // Certifications API
 export const certificationsAPI = {
   list: async (cvId: number) => {
-    return await apiRequest<any[]>(`/cvs/certifications/?cv_id=${cvId}`);
+    return await apiRequest<any[]>(`/api/cvs/certifications/?cv_id=${cvId}`);
   },
   
   create: async (data: any) => {
-    return await apiRequest<any>('/cvs/certifications/', {
+    return await apiRequest<any>('/api/cvs/certifications/', {
       method: 'POST',
       body: JSON.stringify(data),
     });
   },
   
   update: async (id: number, data: any) => {
-    return await apiRequest<any>(`/cvs/certifications/${id}/`, {
+    return await apiRequest<any>(`/api/cvs/certifications/${id}/`, {
       method: 'PUT',
       body: JSON.stringify(data),
     });
   },
   
   delete: async (id: number) => {
-    return await apiRequest<void>(`/cvs/certifications/${id}/`, {
+    return await apiRequest<void>(`/api/cvs/certifications/${id}/`, {
       method: 'DELETE',
     });
   },

@@ -1,28 +1,22 @@
-"use client";
+'use client';
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { FileText, LogOut, Moon, Sun } from "lucide-react";
-import { useTheme } from "next-themes";
-import { useState, useEffect } from "react";
+import { useTheme } from "@/components/providers/ThemeProvider";
+import { useAuth } from "@/lib/auth-context";
 
 export function Header() {
   const pathname = usePathname();
   const router = useRouter();
   const { theme, toggleTheme } = useTheme();
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const { user, logout } = useAuth(); // use AuthContext
 
-  useEffect(() => {
-    // Check if user is logged in from localStorage
-    const loggedIn = localStorage.getItem("isLoggedIn") === "true";
-    setIsLoggedIn(loggedIn);
-  }, [pathname]);
+  const isLoggedIn = !!user; // true if user exists
 
-  const handleLogout = () => {
-    localStorage.removeItem("isLoggedIn");
-    localStorage.removeItem("userName");
-    setIsLoggedIn(false);
+  const handleLogout = async () => {
+    await logout();
     router.push("/");
   };
 
@@ -59,21 +53,10 @@ export function Header() {
               <Button asChild>
                 <Link href="/register">Get Started</Link>
               </Button>
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={toggleTheme}
-                aria-label="Toggle theme"
-              >
-                {theme === "light" ? (
-                  <Moon className="w-5 h-5" />
-                ) : (
-                  <Sun className="w-5 h-5" />
-                )}
-              </Button>
             </>
           ) : (
             <>
+              <span className="mr-2 text-sm">Hi, {user.username}!</span>
               <Button variant="ghost" asChild>
                 <Link href="/dashboard">Dashboard</Link>
               </Button>
@@ -87,20 +70,21 @@ export function Header() {
                 <LogOut className="w-4 h-4 mr-2" />
                 Logout
               </Button>
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={toggleTheme}
-                aria-label="Toggle theme"
-              >
-                {theme === "light" ? (
-                  <Moon className="w-5 h-5" />
-                ) : (
-                  <Sun className="w-5 h-5" />
-                )}
-              </Button>
             </>
           )}
+
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={toggleTheme}
+            aria-label="Toggle theme"
+          >
+            {theme === "light" ? (
+              <Moon className="w-5 h-5" />
+            ) : (
+              <Sun className="w-5 h-5" />
+            )}
+          </Button>
         </nav>
       </div>
     </header>

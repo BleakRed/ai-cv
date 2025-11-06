@@ -13,49 +13,43 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setThemeState] = useState<Theme | null>(null);
+  const [theme, setThemeState] = useState<Theme>("light"); // default to light
   const [mounted, setMounted] = useState(false);
 
+  // Initialize theme from localStorage or system preference
   useEffect(() => {
-    setMounted(true);
-    // Check localStorage first, then system preference
-    const stored = localStorage.getItem("theme") as Theme;
-    if (stored) {
-      setThemeState(stored);
+    if (typeof window === "undefined") return;
+
+    const storedTheme = localStorage.getItem("theme") as Theme | null;
+    if (storedTheme) {
+      setThemeState(storedTheme);
     } else if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
       setThemeState("dark");
     } else {
       setThemeState("light");
     }
+
+    setMounted(true);
   }, []);
 
+  // Apply theme class to <html>
   useEffect(() => {
-    if (!theme || !mounted) return;
+    if (!mounted) return;
 
     const root = document.documentElement;
-    
-    // Remove both classes first
     root.classList.remove("light", "dark");
-    
-    // Add the current theme class
     root.classList.add(theme);
-    
-    // Save to localStorage
-    localStorage.setItem("theme", theme);
+
+    if (typeof window !== "undefined") {
+      localStorage.setItem("theme", theme);
+    }
   }, [theme, mounted]);
 
-  const toggleTheme = () => {
-    setThemeState((prev) => (prev === "light" ? "dark" : "light"));
-  };
+  const toggleTheme = () => setThemeState(prev => (prev === "light" ? "dark" : "light"));
+  const setTheme = (newTheme: Theme) => setThemeState(newTheme);
 
-  const setTheme = (newTheme: Theme) => {
-    setThemeState(newTheme);
-  };
-
-  // Prevent flash of unstyled content
-  if (!mounted || !theme) {
-    return <>{children}</>;
-  }
+  // Render nothing until mounted to avoid FOUC
+  if (!mounted) return null;
 
   return (
     <ThemeContext.Provider value={{ theme, toggleTheme, setTheme }}>
@@ -66,7 +60,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
 export function useTheme() {
   const context = useContext(ThemeContext);
-  if (context === undefined) {
+  if (!context) {
     throw new Error("useTheme must be used within a ThemeProvider");
   }
   return context;

@@ -16,6 +16,7 @@ import {
   Eye
 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
+import Link from "next/link";
 
 interface CVThemePageProps {
   onNavigate: (page: string) => void;
@@ -249,10 +250,12 @@ export function CVThemePage({ onNavigate }: CVThemePageProps) {
 
         {/* Action Buttons */}
         <div className="mt-12 flex gap-4 justify-center">
+          <Link href="/dashboard" passHref>
           <Button variant="outline" onClick={() => onNavigate('dashboard')}>
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back
           </Button>
+          </Link>
           <Button 
             onClick={handleUseTemplate} 
             disabled={!selectedTemplate}

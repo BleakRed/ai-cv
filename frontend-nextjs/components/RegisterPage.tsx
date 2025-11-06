@@ -9,28 +9,43 @@ import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { FileText } from "lucide-react";
 import { toast } from "sonner";
+import { useAuth } from "@/lib/auth-context";
+
+// Inside your register function
 
 export function RegisterPage() {
   const router = useRouter();
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const { register } = useAuth();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [password, setPassword] = useState("");
+  const [password2, setPassword2] = useState("");
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (password !== confirmPassword) {
-      toast.error("Passwords don't match!");
+
+    // Client-side password match validation
+    if (password !== password2) {
+      toast.error("Passwords do not match!");
       return;
     }
+    try {
+      await register({
+        username,
+        email,
+        password,
+        password2,
+        full_name: fullName || "",
+      });
 
-    // Mock registration - in production this would call an API
-    localStorage.setItem("isLoggedIn", "true");
-    localStorage.setItem("userName", name);
-    
-    toast.success("Account created successfully!");
-    router.push("/dashboard");
+      toast.success("Registration successful!");
+      router.push("/dashboard");
+    } catch (error: any) {
+      console.error("Registration failed:", error);
+      toast.error(error.message || "Registration failed");
+    }
   };
 
   return (
@@ -40,21 +55,21 @@ export function RegisterPage() {
           <div className="w-16 h-16 bg-primary rounded-lg flex items-center justify-center mb-4">
             <FileText className="w-8 h-8 text-primary-foreground" />
           </div>
-          <h2 className="mb-2">Create Account</h2>
+          <h2 className="mb-2">Create an Account</h2>
           <p className="text-muted-foreground text-center">
-            Start improving your CV with AI today
+            Sign up to access your CV dashboard
           </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="name">Full Name</Label>
+            <Label htmlFor="username">Username</Label>
             <Input
-              id="name"
+              id="username"
               type="text"
-              placeholder="John Doe"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
+              placeholder="Your username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
               required
             />
           </div>
@@ -64,10 +79,21 @@ export function RegisterPage() {
             <Input
               id="email"
               type="email"
-              placeholder="your.email@example.com"
+              placeholder="you@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="fullName">Full Name</Label>
+            <Input
+              id="fullName"
+              type="text"
+              placeholder="John Doe"
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
             />
           </div>
 
@@ -84,19 +110,19 @@ export function RegisterPage() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="confirmPassword">Confirm Password</Label>
+            <Label htmlFor="password2">Confirm Password</Label>
             <Input
-              id="confirmPassword"
+              id="password2"
               type="password"
               placeholder="••••••••"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
+              value={password2}
+              onChange={(e) => setPassword2(e.target.value)}
               required
             />
           </div>
 
           <Button type="submit" className="w-full">
-            Create Account
+            Register
           </Button>
         </form>
 

@@ -5,12 +5,19 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { FileText, Plus, Download, Star, Trash2, Edit } from "lucide-react";
+
+import { useAuth } from "@/lib/auth-context";
+import Link from "next/link";
+
+
 interface DashboardProps {
   onNavigate: (page: string) => void;
   userName?: string;
 }
 
 export function Dashboard({ onNavigate, userName = "User" }: DashboardProps) {
+  const { user } = useAuth(); // get current user from context
+  const displayName = user?.username || userName;
   // Mock data for demonstration
   const mockCVs = [
     {
@@ -53,7 +60,7 @@ export function Dashboard({ onNavigate, userName = "User" }: DashboardProps) {
       <div className="container mx-auto px-4 py-12">
         {/* Header */}
         <div className="mb-12">
-          <h1 className="mb-3">Welcome back, {userName}!</h1>
+          <h1 className="mb-3">Welcome back, {displayName}!</h1>
           <p className="text-muted-foreground text-lg">
             Manage your CVs and track your improvements
           </p>
@@ -100,14 +107,12 @@ export function Dashboard({ onNavigate, userName = "User" }: DashboardProps) {
 
         {/* Action Buttons */}
         <div className="flex flex-wrap gap-4 mb-12">
-          <Button size="lg" onClick={() => onNavigate('cv-create')}>
-            <Plus className="w-5 h-5 mr-2" />
-            Create New CV
-          </Button>
-          <Button size="lg" variant="outline" onClick={() => onNavigate('cv-theme')}>
-            <FileText className="w-5 h-5 mr-2" />
-            Browse Templates
-          </Button>
+          <Link href="/cv-create" passHref>
+  <Button size="lg" variant="outline">Create New CV</Button>
+</Link>
+<Link href="/cv-theme" passHref>
+  <Button size="lg" variant="outline">Go to CV Theme</Button>
+</Link>
         </div>
 
         {/* CV List */}

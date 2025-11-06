@@ -9,19 +9,29 @@ import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { FileText } from "lucide-react";
 import { toast } from "sonner";
-import { login } from "@/lib/auth-context"
+import { AuthProvider, useAuth } from "@/lib/auth-context";
+
 
 export function LoginPage() {
+  const { login } = useAuth();
   const router = useRouter();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
 const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault();
-  await login(username, password);
+  try {
+    await login(username, password);
+    toast.success("Login successful!");
+    router.push("/dashboard");
+  } catch (error: any) {
+    toast.error(error.message || "Login failed");
+  }
 };
   return (
+    
     <div className="min-h-screen flex items-center justify-center px-4 py-12">
+    <AuthProvider> 
       <Card className="w-full max-w-md p-8">
         <div className="flex flex-col items-center mb-8">
           <div className="w-16 h-16 bg-primary rounded-lg flex items-center justify-center mb-4">
@@ -72,6 +82,7 @@ const handleSubmit = async (e: React.FormEvent) => {
           </p>
         </div>
       </Card>
+      </AuthProvider>
     </div>
   );
 }
